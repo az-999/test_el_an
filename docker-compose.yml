@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  app:
+    build: ./docker/images/php81
+    volumes:
+      - ./application:/app
+    ports:
+      - "6969:8000"
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: wb_api
+      DB_USERNAME: wb
+      DB_PASSWORD: wb_secret
+      API_KEY: test-api-key
+      SEED_ON_START: "true"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: wb_api
+      MYSQL_USER: wb
+      MYSQL_PASSWORD: wb_secret
+      MYSQL_ROOT_PASSWORD: root_secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql_data:
