@@ -13,8 +13,7 @@ if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
   php artisan key:generate --force
 fi
 
-if ! grep -q "OCTANE_SERVER" .env 2>/dev/null; then
-  composer require laravel/octane:^1.3 --no-interaction --with-all-dependencies
+if [ ! -f config/octane.php ]; then
   php artisan octane:install --server=swoole --no-interaction
 fi
 
